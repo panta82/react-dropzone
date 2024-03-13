@@ -757,66 +757,78 @@ export function useDropzone(props = {}) {
   );
 
   // Fn for opening the file dialog programmatically
-  const openFileDialog = useCallback(() => {
-    // No point to use FS access APIs if context is not secure
-    // https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#feature_detection
-    if (fsAccessApiWorksRef.current) {
-      dispatch({ type: "openDialog" });
-      onFileDialogOpenCb();
-      // https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker
-      const opts = {
-        multiple,
-        types: pickerTypes,
-      };
-      window
-        .showOpenFilePicker(opts)
-        .then((handles) => getFilesFromEvent(handles))
-        .then((files) => {
-          setFiles(files, null);
-          dispatch({ type: "closeDialog" });
-        })
-        .catch((e) => {
-          // AbortError means the user canceled
-          if (isAbort(e)) {
-            onFileDialogCancelCb(e);
-            dispatch({ type: "closeDialog" });
-          } else if (isSecurityError(e)) {
-            fsAccessApiWorksRef.current = false;
-            // CORS, so cannot use this API
-            // Try using the input
-            if (inputRef.current) {
-              inputRef.current.value = null;
-              inputRef.current.click();
-            } else {
-              onErrCb(
-                new Error(
-                  "Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."
-                )
-              );
-            }
-          } else {
-            onErrCb(e);
+  const openFileDialog = useCallback(
+    (customOpts) => {
+      // No point to use FS access APIs if context is not secure
+      // https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#feature_detection
+      if (fsAccessApiWorksRef.current) {
+        dispatch({ type: "openDialog" });
+        onFileDialogOpenCb();
+        // https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker
+        const opts = {};
+        if (customOpts && customOpts.multiple !== undefined) {
+          opts.multiple = customOpts.multiple;
+        } else {
+          opts.multiple = multiple;
+        }
+        if (customOpts && customOpts.accept !== undefined) {
+          if (customOpts.accept !== null) {
+            opts.types = pickerOptionsFromAccept(customOpts.accept);
           }
-        });
-      return;
-    }
+        } else {
+          opts.types = pickerTypes;
+        }
+        window
+          .showOpenFilePicker(opts)
+          .then((handles) => getFilesFromEvent(handles))
+          .then((files) => {
+            setFiles(files, null);
+            dispatch({ type: "closeDialog" });
+          })
+          .catch((e) => {
+            // AbortError means the user canceled
+            if (isAbort(e)) {
+              onFileDialogCancelCb(e);
+              dispatch({ type: "closeDialog" });
+            } else if (isSecurityError(e)) {
+              fsAccessApiWorksRef.current = false;
+              // CORS, so cannot use this API
+              // Try using the input
+              if (inputRef.current) {
+                inputRef.current.value = null;
+                inputRef.current.click();
+              } else {
+                onErrCb(
+                  new Error(
+                    "Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."
+                  )
+                );
+              }
+            } else {
+              onErrCb(e);
+            }
+          });
+        return;
+      }
 
-    if (inputRef.current) {
-      dispatch({ type: "openDialog" });
-      onFileDialogOpenCb();
-      inputRef.current.value = null;
-      inputRef.current.click();
-    }
-  }, [
-    dispatch,
-    onFileDialogOpenCb,
-    onFileDialogCancelCb,
-    useFsAccessApi,
-    setFiles,
-    onErrCb,
-    pickerTypes,
-    multiple,
-  ]);
+      if (inputRef.current) {
+        dispatch({ type: "openDialog" });
+        onFileDialogOpenCb();
+        inputRef.current.value = null;
+        inputRef.current.click();
+      }
+    },
+    [
+      dispatch,
+      onFileDialogOpenCb,
+      onFileDialogCancelCb,
+      useFsAccessApi,
+      setFiles,
+      onErrCb,
+      pickerTypes,
+      multiple,
+    ]
+  );
 
   // Cb to open the file dialog when SPACE/ENTER occurs on the dropzone
   const onKeyDownCb = useCallback(
