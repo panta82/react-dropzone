@@ -1,6 +1,6 @@
 {
-  "name": "react-dropzone",
-  "description": "Simple HTML5 drag-drop zone with React.js",
+  "name": "@pantas-net/react-dropzone",
+  "description": "[Fork] Simple HTML5 drag-drop zone with React.js",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "sideEffects": false,
@@ -78,12 +78,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/react-dropzone/react-dropzone.git"
+    "url": "https://github.com/panta82/react-dropzone.git"
   },
   "bugs": {
-    "url": "https://github.com/react-dropzone/react-dropzone/issues"
+    "url": "https://github.com/panta82/react-dropzone/issues"
   },
-  "homepage": "https://github.com/react-dropzone/react-dropzone",
+  "homepage": "https://github.com/panta82/react-dropzone",
   "author": "Param Aggarwal",
   "contributors": [
     "Andrey Okonetchnikov <andrey@okonet.ru> (http://okonet.ru)",
@@ -171,10 +171,11 @@
     "webpack-blocks": "^2.1.0"
   },
   "typings": "typings/react-dropzone.d.ts",
-  "version": "0.0.0-development",
+  "version": "14.2.3-1",
   "engines": {
     "node": ">= 10.13"
   },
+  "private": false,
   "browserslist": [
     "defaults"
   ]

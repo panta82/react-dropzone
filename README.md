@@ -1,3 +1,7 @@
+**Fork** by panta82. Changes compared to the origin:
+- Allow passing `accept` and `multiple` when triggering the file dialog programmatically.
+----
+
 ![react-dropzone logo](https://raw.githubusercontent.com/react-dropzone/react-dropzone/master/logo/logo.png)
 
 # react-dropzone
