@@ -101,6 +101,11 @@ Dropzone.propTypes = {
   accept: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
 
   /**
+   * Custom description to be shown in the open dialog, when using "accept"
+   */
+  acceptDescription: PropTypes.string,
+
+  /**
    * Allow drag 'n' drop (or selection from the file dialog) of multiple files
    */
   multiple: PropTypes.bool,
@@ -369,6 +374,7 @@ const initialState = {
  *
  * @param {object} props
  * @param {import("./utils").AcceptProp} [props.accept] Set accepted file types.
+ * @param {string} [props.acceptDescription="Files"] Description for acceptable files, to be shown in the file picker.
  * Checkout https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker types option for more information.
  * Keep in mind that mime type determination is not reliable across platforms. CSV files,
  * for example, are reported as text/plain under macOS but as application/vnd.ms-excel under
@@ -425,6 +431,7 @@ const initialState = {
 export function useDropzone(props = {}) {
   const {
     accept,
+    acceptDescription,
     disabled,
     getFilesFromEvent,
     maxSize,
@@ -454,7 +461,10 @@ export function useDropzone(props = {}) {
   };
 
   const acceptAttr = useMemo(() => acceptPropAsAcceptAttr(accept), [accept]);
-  const pickerTypes = useMemo(() => pickerOptionsFromAccept(accept), [accept]);
+  const pickerTypes = useMemo(
+    () => pickerOptionsFromAccept(accept, acceptDescription),
+    [accept, acceptDescription]
+  );
 
   const onFileDialogOpenCb = useMemo(
     () => (typeof onFileDialogOpen === "function" ? onFileDialogOpen : noop),
@@ -758,7 +768,7 @@ export function useDropzone(props = {}) {
 
   // Fn for opening the file dialog programmatically
   const openFileDialog = useCallback(
-    (customOpts) => {
+    (/** DropzoneOpenOpts */ customOpts) => {
       // No point to use FS access APIs if context is not secure
       // https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#feature_detection
       if (fsAccessApiWorksRef.current) {
@@ -771,9 +781,16 @@ export function useDropzone(props = {}) {
         } else {
           opts.multiple = multiple;
         }
-        if (customOpts && customOpts.accept !== undefined) {
+        if (
+          customOpts &&
+          (customOpts.accept !== undefined ||
+            customOpts.acceptDescription !== undefined)
+        ) {
           if (customOpts.accept !== null) {
-            opts.types = pickerOptionsFromAccept(customOpts.accept);
+            opts.types = pickerOptionsFromAccept(
+              customOpts.accept || accept,
+              customOpts.acceptDescription || acceptDescription
+            );
           }
         } else {
           opts.types = pickerTypes;

@@ -193,9 +193,10 @@ export function canUseFileSystemAccessAPI() {
  * `{types}` option for https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker
  *
  * @param {AcceptProp} accept
+ * @param {string} description
  * @returns {{accept: string[]}[]}
  */
-export function pickerOptionsFromAccept(accept) {
+export function pickerOptionsFromAccept(accept, description = "Files") {
   if (isDefined(accept)) {
     const acceptForPicker = Object.entries(accept)
       .filter(([mimeType, ext]) => {
@@ -227,7 +228,7 @@ export function pickerOptionsFromAccept(accept) {
     return [
       {
         // description is required due to https://crbug.com/1264708
-        description: "Files",
+        description,
         accept: acceptForPicker,
       },
     ];

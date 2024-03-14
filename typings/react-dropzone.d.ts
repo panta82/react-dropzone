@@ -29,6 +29,7 @@ export interface FileRejection {
 
 export type DropzoneOptions = Pick<React.HTMLProps<HTMLElement>, PropTypes> & {
   accept?: Accept;
+  acceptDescription?: string;
   minSize?: number;
   maxSize?: number;
   maxFiles?: number;
@@ -76,8 +77,14 @@ export type DropzoneState = DropzoneRef & {
   getInputProps: <T extends DropzoneInputProps>(props?: T) => T;
 };
 
+export interface DropzoneOpenOpts {
+  accept?: Accept | null;
+  acceptDescription?: string;
+  multiple?: boolean;
+}
+
 export interface DropzoneRef {
-  open: (opts?: { accept?: Accept | null; multiple?: boolean }) => void;
+  open: (opts?: DropzoneOpenOpts) => void;
 }
 
 export interface DropzoneRootProps extends React.HTMLAttributes<HTMLElement> {
