@@ -1,7 +1,15 @@
-**Fork** by panta82. Changes compared to the origin:
+**Fork** of https://github.com/react-dropzone/react-dropzone
+
+Changes compared to the origin:
 
 - Allow passing `accept` and `multiple` when triggering the file dialog programmatically.
 - New prop `acceptDescription`.
+
+Package: https://www.npmjs.com/package/@pantas-net/react-dropzone
+
+```bash
+npm install @pantas-net/react-dropzone
+```
 
 ---
 
